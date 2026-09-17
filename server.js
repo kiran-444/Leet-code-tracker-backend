@@ -103,7 +103,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/data', auth, async (req, res) => {
   try {
     const doc = await db.collection('userdata').findOne({ userId: req.userId });
-    res.json(doc ? { profiles: doc.profiles || [], data: doc.data || {} } : { profiles: [], data: {} });
+    res.json(doc ? { problems: doc.problems || [], patterns: doc.patterns || [] } : { problems: [], patterns: [] });
   } catch (e) {
     console.error('Load data error:', e);
     res.status(500).json({ error: 'Could not load data' });
@@ -112,10 +112,10 @@ app.get('/api/data', auth, async (req, res) => {
 
 app.put('/api/data', auth, async (req, res) => {
   try {
-    const { profiles, data } = req.body || {};
+    const { problems, patterns } = req.body || {};
     await db.collection('userdata').updateOne(
       { userId: req.userId },
-      { $set: { profiles: profiles || [], data: data || {}, updatedAt: new Date() } },
+      { $set: { problems: problems || [], patterns: patterns || [], updatedAt: new Date() } },
       { upsert: true }
     );
     res.json({ ok: true });
